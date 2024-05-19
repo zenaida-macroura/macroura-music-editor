@@ -18,10 +18,17 @@
          <p>Block Data:</p>
          <textarea id="definitions" style="flex: 1;"></textarea>
       </div>
-      <div class="item"><h3>Chords Sequencer</h3></div>
+      <div class="item container vertical"><h3>Chords Sequencer</h3>
+         <div><button class="blue" onclick="outchord.value = convertBlockToChords(inchord.value).join('\n')">Expand Chords</button></div>
+         <p>Input Chord Block Data:</p>
+	 <textarea id="inchord" rows=1></textarea>
+	 <p>Output Chord Block Data:</p>
+	 <textarea id="outchord" style="flex: 1;"></textarea>
+      </div>
       <div class="item"><h3>Percussion Sequencer</h3></div>
    </div>
    <script src="src/live-midi-monophonic.js"></script>
+   <script src="src/chord-sequencer.js"></script>
    <script src="lib/wmsx.js"></script>
    <script>
       WMSX.PRESETS = "scc2, disk"
