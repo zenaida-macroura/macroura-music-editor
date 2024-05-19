@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
+<html>
+<head>
+   <title>Macroura Music Editor - Sketch Kit</title>
+   <link rel="stylesheet" href="src/layout.css"/>
+</head>
+<body>
+   <div class="container horizontal">
+      <div id="wmsx" class="item" style="min-width: 700px;"><h3>MuSICA Editor</h3><div id="wmsx-screen"></div>Powered by <a href="http://webmsx.org/">WebMSX</a></div>
+      <div class="item container vertical">
+         <h3>Record from MIDI (Monophonic)</h3>
+         <div><button class="blue" onclick="startRecording()">Record MIDI</button><!--<button class="blue">Record Keyboard</button>--><button class="red" onclick="stopRecording()">Stop Recording</button></div>
+         <p>Sequence Data:</p>
+         <textarea id="references"></textarea>
+         <p>Block Data:</p>
+         <textarea id="definitions" style="flex: 1;"></textarea>
+      </div>
+      <div class="item"><h3>Chords Sequencer</h3></div>
+      <div class="item"><h3>Percussion Sequencer</h3></div>
+   </div>
+   <script src="src/live-midi-monophonic.js"></script>
+   <script src="lib/wmsx.js"></script>
+   <script>
+      WMSX.PRESETS = "scc2, disk"
+      WMSX.MACHINE = "MSX2A" // Previously used "MSX1J" to match the Toshiba HX-21
+      WMSX.DISKA_URL = "res/musica.dsk"
+      WMSX.BOOT_KEYS = "y,d2,num_2" // Hacky for sure.  The d2 triggers the sending of y, but is itself not a 2, so we use num_2 to send the 2.
+   </script>
+   <script src="src/patch-wmsx.js"></script>
+   <script>
+      // How to send a string to the keyboard buffer
+      //WMSX.room.machineControls.processControlState(wmsx.MachineControls.TYPE_STRING, true, false, 'Hello, world!');
+   </script>
+</body>
+</html>

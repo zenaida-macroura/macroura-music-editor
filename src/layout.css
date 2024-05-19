@@ -1,0 +1,35 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+body, html { margin: 0; padding: 0; font-family: sans-serif; }
+* { box-sizing: border-box; }
+#wmsx { text-align: center; background: #9494a4; }
+
+.container { display: flex; flex-wrap: wrap; align-content: stretch; align-items: stretch; }
+.horizontal { flex-direction: row; }
+.vertical { flex-direction: column; }
+.item { flex: 500px; border: 1px solid black; min-height: 50vh; border-left: 2px solid var(--btn-grey-dark); border-top: 2px solid var(--btn-grey-dark); border-bottom: 2px solid var(--btn-grey-light); border-right: 2px solid var(--btn-grey-light); background: var(--btn-grey-norm); }
+h3 { display: block; font-size: 1em; margin: 0px; padding: 4px; border: 1px solid var(--btn-grey-light); border-right: 1px solid var(--btn-grey-dark); border-bottom: 1px solid var(--btn-grey-dark); background: var(--btn-grey-norm); text-align: center; }
+
+
+input[type=textbox], textarea { background: #fff; border-left: 1px solid var(--btn-grey-dark); border-top: 1px solid var(--btn-grey-dark); border-right: 1px solid var(--btn-grey-light); border-bottom: 1px solid var(--btn-grey-light); width: 100%; }
+
+button { border: 1px solid var(--btn-grey-light); border-bottom: 1px solid var(--btn-grey-dark); border-right: 1px solid var(--btn-grey-dark); background: var(--btn-grey-norm); padding: 8px; font-size: 15px; }
+button.blue { border: 1px solid var(--btn-blue-light); border-bottom: 1px solid var(--btn-blue-dark); border-right: 1px solid var(--btn-blue-dark); background: var(--btn-blue-norm); padding: 8px; color: white; }
+button.red { border: 1px solid var(--btn-red-light); border-bottom: 1px solid var(--btn-red-dark); border-right: 1px solid var(--btn-red-dark); background: var(--btn-red-norm); padding: 8px; color: white;}
+
+:root {
+   --btn-grey-norm: #acb5c6;
+   --btn-grey-light: #dedee7;
+   --btn-grey-dark: #51636b;
+
+   --btn-blue-norm: #63639c;
+   --btn-blue-light: #b5b5d6;
+   --btn-blue-dark: #31314a;
+
+   --btn-red-norm: #b54a7a;
+   --btn-red-light: #deadc6;
+   --btn-red-dark: #522139;
+}
