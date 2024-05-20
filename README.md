@@ -40,8 +40,8 @@ cdsn=[o350]2r2[xm50]2r2[t350]2r2[v350]2r2
 ```
 Is converted to:
 ```
-cds1=
-cds2=
-cds3=
-cds4=
+cds1=c2r2a2r2f2r2g2r2
+cds2=e2r2c2r2a2r2b2r2
+cds3=g2r2e2r2c2r2d2r2
+cds4=r2r2r2r2r2r2r2r2
 ```
