@@ -1,6 +1,23 @@
 # macroura-music-editor
 An MML &amp; MIDI editor targeting MuSICA for the MSX.
 
+Optimistic Roadmap:
+* [ ] MIDI Input
+  * [x] Monophonic Recording
+  * [ ] Polyphonic Recording
+  * [ ] Audio feedback while recording
+* [x] Chord Sequencer
+* [ ] Drum Sequencer
+* [ ] Extended MML dialect transpiler?
+* [ ] Reimplement MuSICA Compiler in JS or wasm
+  * [ ] Craft front-end replacement for the role previously filled by MuSICA/WebMSX
+    * [ ] MML Editor
+    * [ ] Voice Editor
+  * [ ] MML to BGM (This is the hard part)
+    * [ ] Block Data
+    * [ ] Sequence Data
+  * [ ] BGM to floppy with start script that launches the MuSICA player (now using WebMSX as the player only and not as an intermediary editor)
+
 ## Documentation
 
 ### Sketch Tools
