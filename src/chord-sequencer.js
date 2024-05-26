@@ -17,8 +17,18 @@ function convertLabelToNoteArray(label) {
 	// First, shift the chromatic scale so that it starts with the right note.
 	let scale_offset = scale_identifiers.indexOf(label[0]);
 	if (scale_offset === -1) {
-		console.error('Start of chord label invalid for ' + label);
-		return [];
+		// Try the chromatic scale labels
+		scale_offset = chromatic_scale.indexOf(label[0]);
+	
+		if (scale_offset === -1) {
+			// Still invalid, exit out
+			console.error('Start of chord label invalid for ' + label);
+			return [];
+		}
+
+		if (label[1] === '#') {
+			scale_offset += 1
+		}
 	}
 	// Then, iterate through the specified scale degrees, converting them to notes.
 	let notes = [chromatic_scale[(scale_offset)%octave]];

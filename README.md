@@ -28,13 +28,15 @@ Optimistic Roadmap:
 
 The chord sequencer makes the base assumption that every chord is a tetrad built from a scale.  The 1 is implied by specifying the scale from which to build the chord, and all other notes in the tetrad must be specified.
 
-The scale is determined by the initial letter in the tetrad.  Originally the chromatic scale was mapped from o-z to save characters, but we intend to also allow specification by sharps and flats. (TODO)
+The scale is determined by the initial letter in the tetrad.  Originally the chromatic scale was mapped from o-z to save characters, but now also supports regular chromatic letters and sharps.
 
 ```
-New Schema: c  c# d  d# e  f  f# g  g# a  a# b (WIP)
+New Schema: c  c# d  d# e  f  f# g  g# a  a# b
 Old Schema: o  p  q  r  s  t  u  v  w  x  y  z
 
 ```
+Do note that the new schema does not support defining via flats.  Sharps are used because the `#` symbol does not exist in the scale degree list, as defined by the following paragraphs.
+
 After the first character defines the scale, the remaining characters specify which degrees in the scale build the tetrad (after the 1).  Some important distinctions here is that `7` refers to the major seven, so for a normal seventh chord, which uses the flat seven, use `s` instead.  Following that schema, the flat nine is `n`, the flat ten is `t`, the flat twelve is `w`, and the flat thirteen is `r`.  Another distinction of note is that flat and sharp five is indicated by `-` and `+`.
 ```
 1 2 34 5 6 78 9 ab c d
