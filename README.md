@@ -8,7 +8,8 @@ Optimistic Roadmap:
   * [ ] Audio feedback while recording
 * [x] Chord Sequencer
 * [ ] Drum Sequencer
-* [ ] Extended MML dialect transpiler?
+* [x] Extended MML dialect transpiler
+  * [x] Chord splitter
 * [ ] Reimplement MuSICA Compiler in JS or wasm
   * [ ] Craft front-end replacement for the role previously filled by MuSICA/WebMSX
     * [ ] MML Editor

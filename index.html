@@ -18,11 +18,11 @@
          <p>Block Data:</p>
          <textarea id="definitions" style="flex: 1;"></textarea>
       </div>
-      <div class="item container vertical"><h3>Chords Sequencer</h3>
-         <div><button class="blue" onclick="outchord.value = convertBlockToChords(inchord.value).join('\n')">Expand Chords</button></div>
-         <p>Input Chord Block Data:</p>
+      <div class="item container vertical"><h3>Chord Extension Transpiler</h3>
+         <div><button class="blue" onclick="outchord.value = processMMLFileForChords(inchord.value)">Expand Chords</button></div>
+         <p>Input MML File with chords:</p>
 	 <textarea id="inchord" rows=1></textarea>
-	 <p>Output Chord Block Data:</p>
+	 <p>Output MuSICA compatible MML File:</p>
 	 <textarea id="outchord" style="flex: 1;"></textarea>
       </div>
       <div class="item container vertical">

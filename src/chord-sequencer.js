@@ -55,6 +55,7 @@ function convertBlockToChords(block_definition) {
 		// no chords
 		return [block_definition];
 	}
+
 	// Get the block label, split it into four labels
 	let prelude = chords[0].split('=');
 	let blocks = [];
@@ -66,10 +67,80 @@ function convertBlockToChords(block_definition) {
 		// Separate the chord label from anything following it; get the notes from the label
 		let before_and_after = chords[c].split(']');
 		let notes = convertLabelToNoteArray(before_and_after[0]);
+
 		// for each note, add it to the corresponding output block, then the things following
 		for (let n = 0; n < 4/*notes.length*/; n++) {
 			blocks[n] += notes[n] + before_and_after[1];
 		}
 	}
 	return blocks;
+}
+
+// Process a file, converting blocks with chords into multiple blocks, and setting FM3-FM6 from FMC.
+function processMMLFileForChords(file_contents) {
+	let blocks_labels_with_chords = [];
+
+	// Split file into blocks
+	let block_arr = file_contents.split('\n');
+	let i = 1;
+	while (i < block_arr.length) {
+		if (block_arr[i].indexOf('=') == -1) {
+			block_arr[i - 1] += '\n' + block_arr[i];
+			block_arr.splice(i, 1);
+		} else {
+			i++;
+		}
+	}
+
+	// Process each block, if contains chords split and note label in blocks_labels_with_chords, drop defs into file
+	for (i = 0; i < block_arr.length; i++) {
+		let out = convertBlockToChords(block_arr[i]);
+
+		// One in, one out means no chords, skip
+		if (out.length == 1) continue;
+
+		// note label
+		blocks_labels_with_chords.push(block_arr[i].split('=')[0]);
+
+		// Splice the new blocks in place of the old one
+		block_arr.splice(i, 1, ...out);
+
+		// Increment by the added blocks, keeping in mind that we're about to increment by one anyways.
+		i += (out.length - 1);
+	}
+
+	// Check if we have any converted blocks; if not, return as is
+	if (blocks_labels_with_chords.length == 0) return block_arr.join('\n');
+
+	// Process FMC
+	let fmc_index = block_arr.findIndex(ele => ele.indexOf('FMC =') != -1);
+
+	// Check if FMC even exists
+	if (fmc_index == -1) return block_arr.join('\n');
+
+	let fm3_index = block_arr.findIndex(ele => ele.indexOf('FM3 =') != -1);
+	let fm4_index = block_arr.findIndex(ele => ele.indexOf('FM4 =') != -1);
+	let fm5_index = block_arr.findIndex(ele => ele.indexOf('FM5 =') != -1);
+	let fm6_index = block_arr.findIndex(ele => ele.indexOf('FM6 =') != -1);
+
+	// Neutralize FMC in file output
+	block_arr[fmc_index] = ';' + block_arr[fmc_index];
+
+	// Check to see if we're going to be overwriting anything
+	if ((block_arr[fm3_index].split('=')[1].length > 1) || (block_arr[fm4_index].split('=')[1].length > 1) || (block_arr[fm5_index].split('=')[1].length > 1) || (block_arr[fm6_index].split('=')[1].length > 1)) {
+		console.error('Block chord definition would overwrite FM3-FM6, which is already defined.');
+		alert('Block chord definition would overwrite FM3-FM6, which is already defined.');
+		// Return without overwriting
+		return block_arr.join('\n');
+	}
+
+	// Alright, let's split the defs
+	let indices = [fm3_index, fm4_index, fm5_index, fm6_index];
+	for (i = 0; i < 4; i++) {
+		block_arr[indices[i]] += block_arr[fmc_index].split('=')[1];
+		for (let j = 0; j < blocks_labels_with_chords.length; j++) {
+			block_arr[indices[i]] = block_arr[indices[i]].replaceAll(blocks_labels_with_chords[j], blocks_labels_with_chords[j].slice(0, -1) + (i + 1));
+		}
+	}
+	return block_arr.join('\n');
 }
