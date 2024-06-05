@@ -17,7 +17,9 @@ Optimistic Roadmap:
   * [ ] MML to BGM (This is the hard part)
     * [ ] Block Data
     * [ ] Sequence Data
-  * [ ] BGM to floppy with start script that launches the MuSICA player (now using WebMSX as the player only and not as an intermediary editor)
+  * [ ] Play back the BGM through one of two methods:
+    * [ ] BGM to floppy with start script that launches the MuSICA player (now using WebMSX as the player only and not as an intermediary editor)
+    * [ ] Implement kss2wav and then play the wave file.
 
 ## Documentation
 
@@ -65,3 +67,24 @@ cds2=e2r2c2r2a2r2b2r2
 cds3=g2r2e2r2c2r2d2r2
 cds4=r2r2r2r2r2r2r2r2
 ```
+### Exporting to WAV [WIP & TODO]
+
+#### Instructions for MacOS
+
+These instructions assume you have the Homebrew package manager for MacOS.
+
+Prerequisites include:
+```bash
+brew install normalize
+```
+For normalizing the output WAV file.
+
+Additionally, you will need kss2wav, which can be found here: https://github.com/digital-sound-antiques/libkss
+
+1. Save the BGM to the virtual floppy disk.
+2. Download the floppy disk.
+3. Change the file extension to `.img`.
+4. Double click to mount the disk image.
+5. Copy the `.BGM` file to your computer.
+6. `./kss2wav -l1 -p118 -f0 ~/Downloads/TEST.BGM` -> creates `~/Downloads/TEST.wav`. (`-l1` plays the song once, `-p118` is the length of the song in seconds, `-f0` means no fadeout).
+7. `normalize ~/Downloads/TEST.wav` -> The file is normalized (gain is adjusted to make it louder).
