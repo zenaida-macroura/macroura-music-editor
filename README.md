@@ -88,3 +88,4 @@ Additionally, you will need kss2wav, which can be found here: https://github.com
 5. Copy the `.BGM` file to your computer.
 6. `./kss2wav -l1 -p118 -f0 ~/Downloads/TEST.BGM` -> creates `~/Downloads/TEST.wav`. (`-l1` plays the song once, `-p118` is the length of the song in seconds, `-f0` means no fadeout).
 7. `normalize ~/Downloads/TEST.wav` -> The file is normalized (gain is adjusted to make it louder).
+8. (Optional) `ffmpeg -i ~/Downloads/TEST.wav -acodec mp3 ~/Downloads/TEST.mp3` -> the file is converted to an MP3.
