@@ -67,6 +67,14 @@ cds2=e2r2c2r2a2r2b2r2
 cds3=g2r2e2r2c2r2d2r2
 cds4=r2r2r2r2r2r2r2r2
 ```
+
+### Transferring MML data to MuSICA
+
+* Within MuSICA, [ESC N Y] to clear current file.
+* Within WebMSX, press ALT+B.
+* Paste in the MML data
+* Press F12 to speed up text input
+
 ### Exporting to WAV [WIP & TODO]
 
 #### Instructions for MacOS
