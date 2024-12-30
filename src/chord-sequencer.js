@@ -112,9 +112,6 @@ function processMMLFileForChords(file_contents) {
 		i += (out.length - 1);
 	}
 
-	// Check if we have any converted blocks; if not, return as is
-	if (blocks_labels_with_chords.length == 0) return block_arr.join('\n');
-
 	// Test for FMC or FMT to see if we need to process them.
 	let fmc_index = block_arr.findIndex(ele => ((ele.indexOf('FMC =') != -1) && (ele.indexOf(';FMC =') == -1)));
 	let fmt_index = block_arr.findIndex(ele => ((ele.indexOf('FMT =') != -1) && (ele.indexOf(';FMT =') == -1)));
@@ -122,6 +119,9 @@ function processMMLFileForChords(file_contents) {
 	// Neutralize FMC and/or FMT in file output
 	if (fmc_index != -1) block_arr[fmc_index] = ';' + block_arr[fmc_index];
 	if (fmt_index != -1) block_arr[fmt_index] = ';' + block_arr[fmt_index];
+
+	// Check if we have any converted blocks; if not, return as is
+	if (blocks_labels_with_chords.length == 0) return block_arr.join('\n');
 
 	// Check if FMC or FMT are empty entries
 	// TODO: EDGE CASE: We likely used `> 1` for length checks due to CR/LF 13/10 in Windows.
