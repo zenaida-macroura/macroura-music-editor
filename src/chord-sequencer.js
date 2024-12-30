@@ -68,6 +68,9 @@ function convertBlockToChords(block_definition) {
 		let before_and_after = chords[c].split(']');
 		let notes = convertLabelToNoteArray(before_and_after[0]);
 
+		// Fill implied 0's (rests).
+		notes = notes.concat(Array(4 - notes.length).fill('r'));
+
 		// for each note, add it to the corresponding output block, then the things following
 		for (let n = 0; n < 4/*notes.length*/; n++) {
 			blocks[n] += notes[n] + before_and_after[1];
@@ -112,34 +115,60 @@ function processMMLFileForChords(file_contents) {
 	// Check if we have any converted blocks; if not, return as is
 	if (blocks_labels_with_chords.length == 0) return block_arr.join('\n');
 
-	// Process FMC
-	let fmc_index = block_arr.findIndex(ele => ele.indexOf('FMC =') != -1);
+	// Test for FMC or FMT to see if we need to process them.
+	let fmc_index = block_arr.findIndex(ele => ((ele.indexOf('FMC =') != -1) && (ele.indexOf(';FMC =') == -1)));
+	let fmt_index = block_arr.findIndex(ele => ((ele.indexOf('FMT =') != -1) && (ele.indexOf(';FMT =') == -1)));
 
-	// Check if FMC even exists
-	if (fmc_index == -1) return block_arr.join('\n');
+	// Neutralize FMC and/or FMT in file output
+	if (fmc_index != -1) block_arr[fmc_index] = ';' + block_arr[fmc_index];
+	if (fmt_index != -1) block_arr[fmt_index] = ';' + block_arr[fmt_index];
+
+	// Check if FMC or FMT are empty entries
+	// TODO: EDGE CASE: We likely used `> 1` for length checks due to CR/LF 13/10 in Windows.
+	// 	However, that means the definition `FMC =a` would be skipped, even if label a did exist.
+	// 	So, For here we'll use `< 1` with the knowledge that if 13/10 does cause problems then we can identify the real issue.
+	if (fmc_index != -1 && block_arr[fmc_index].split('=')[1].length < 1) fmc_index = -1;
+	if (fmt_index != -1 && block_arr[fmt_index].split('=')[1].length < 1) fmt_index = -1;
+
+	// If neither FMC nor FMT exist, or they exist but are empty, then no additional processing is required
+	if (fmc_index == -1 && fmt_index == -1) return block_arr.join('\n');
 
 	let fm3_index = block_arr.findIndex(ele => ele.indexOf('FM3 =') != -1);
 	let fm4_index = block_arr.findIndex(ele => ele.indexOf('FM4 =') != -1);
 	let fm5_index = block_arr.findIndex(ele => ele.indexOf('FM5 =') != -1);
 	let fm6_index = block_arr.findIndex(ele => ele.indexOf('FM6 =') != -1);
 
-	// Neutralize FMC in file output
-	block_arr[fmc_index] = ';' + block_arr[fmc_index];
+	// Display warning noting that FMC takes precendence over FMT
+	if ((fmc_index != -1) && (fmt_index != -1)) {
+		console.warn('FMC takes precedence over FMT');
+	}
 
 	// Check to see if we're going to be overwriting anything
-	if ((block_arr[fm3_index].split('=')[1].length > 1) || (block_arr[fm4_index].split('=')[1].length > 1) || (block_arr[fm5_index].split('=')[1].length > 1) || (block_arr[fm6_index].split('=')[1].length > 1)) {
-		console.error('Block chord definition would overwrite FM3-FM6, which is already defined.');
-		alert('Block chord definition would overwrite FM3-FM6, which is already defined.');
+	// Change made 2024-12-29: FM3 only relevant for FMC, so added FMC index check ANDed with fm3_index check)
+	if (((fmc_index != -1) && (block_arr[fm3_index].split('=')[1].length > 1)) || (block_arr[fm4_index].split('=')[1].length > 1) || (block_arr[fm5_index].split('=')[1].length > 1) || (block_arr[fm6_index].split('=')[1].length > 1)) {
+		let error_string = 'Block chord definition would overwrite FM' + ((fmc_index != -1)? '3' : '4')+ '-FM6, which is already defined.';
+		console.error(error_string);
+		alert(error_string);
 		// Return without overwriting
 		return block_arr.join('\n');
 	}
 
 	// Alright, let's split the defs
-	let indices = [fm3_index, fm4_index, fm5_index, fm6_index];
+	let indices = [fm4_index, fm5_index, fm6_index];
+	let block_to_poll_index = fmt_index; // Starting with FMT as default/base case.
+	if (fmc_index != -1) {
+		// Account for FMC overwriting FM3
+		indices.unshift(fm3_index);
+		// Switch to FMC
+		block_to_poll_index = fmc_index
+	}
 	for (i = 0; i < 4; i++) {
-		block_arr[indices[i]] += block_arr[fmc_index].split('=')[1];
+		block_arr[indices[i]] += block_arr[block_to_poll_index].split('=')[1];
 		for (let j = 0; j < blocks_labels_with_chords.length; j++) {
-			block_arr[indices[i]] = block_arr[indices[i]].replaceAll(blocks_labels_with_chords[j], blocks_labels_with_chords[j].slice(0, -1) + (i + 1));
+			block_arr[indices[i]] = block_arr[indices[i]].replaceAll(
+				blocks_labels_with_chords[j],
+				blocks_labels_with_chords[j].slice(0, 3) + (i + 1)
+			);
 		}
 	}
 	return block_arr.join('\n');

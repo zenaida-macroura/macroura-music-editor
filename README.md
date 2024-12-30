@@ -45,10 +45,10 @@ After the first character defines the scale, the remaining characters specify wh
 1 2 34 5 6 78 9 ab c d
  u m  - + s  n t  w r
 ```
-When you wish to have a triad instead of a tetrad, replace one of the notes in the scale with `0` and a rest will be played for that channel.
+When you wish to have a triad instead of a tetrad, either replace one of the notes in the scale with `0` and a rest will be played for that channel, or truncate the label and a rest will be played starting from the fourth channel.
 
 Examples:
-* C major triad: `o350`
+* C major triad: `o350` or `o35`
 * Cm7b5: `om-s`
 * Em9: `sms9` (drop the five)
 * F#7: `u35s`
