@@ -13,7 +13,17 @@ const octave = 12;
 
 // Take in a label string (of any length) and convert it into an array of the notes making up the chord.
 // Future proofing against our current four note / tetrad limitation.
-function convertLabelToNoteArray(label) {
+function convertLabelToNoteArray(label_str) {
+	let label = Array.from(label_str);
+	let inversion = false;
+	
+	// Check to see if this chord should be interpreted as a literal inversion.
+	// (That is, it should not be inverted to fit within an octave.)
+	if (label[0] === ':') {
+		inversion = true;
+		label.shift();
+	}
+	
 	// First, shift the chromatic scale so that it starts with the right note.
 	let scale_offset = scale_identifiers.indexOf(label[0]);
 	if (scale_offset === -1) {
@@ -30,6 +40,7 @@ function convertLabelToNoteArray(label) {
 			scale_offset += 1
 		}
 	}
+	
 	// Then, iterate through the specified scale degrees, converting them to notes.
 	let notes = [chromatic_scale[(scale_offset)%octave]];
 	for (let i = 1; i < label.length; i++) {
@@ -42,7 +53,8 @@ function convertLabelToNoteArray(label) {
 			console.warn('Note specification at position ' + i + ' in chord ' + label + ' is invalid.');
 			continue;
 		}
-		notes.push(chromatic_scale[(scale_offset + note_offset)%octave]);
+		let scale_hops = Math.floor((scale_offset + note_offset)/octave);
+		notes.push(''.padEnd(inversion ? 0 : scale_hops, '>') + chromatic_scale[(scale_offset + note_offset)%octave] + ''.padEnd(inversion ? 0 : scale_hops, '<'));
 	}
 	return notes;
 }
