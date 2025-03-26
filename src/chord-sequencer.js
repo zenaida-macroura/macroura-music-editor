@@ -6,6 +6,7 @@
 
 // Let's start with the constants
 const chromatic_scale =   ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
+const _chromatic_s_flat = ['c', 'd-', 'd', 'e-', 'e', 'f', 'g-', 'g', 'a-', 'a', 'b-', 'b'];
 const scale_identifiers = ['o', 'p',  'q', 'r',  's', 't', 'u',  'v', 'w',  'x', 'y',  'z'];
 const sequence_degrees =  ['1', 'u',  '2', 'm',  '3', '4', '-',  '5', '+',  '6', 's',  '7',
                            '8', 'n',  '9', 't',  'a', 'b', 'w',  'c', 'r',  'd'];
@@ -16,11 +17,19 @@ const octave = 12;
 function convertLabelToNoteArray(label_str) {
 	let label = Array.from(label_str);
 	let inversion = false;
+	let spellout = false;
 	
 	// Check to see if this chord should be interpreted as a literal inversion.
 	// (That is, it should not be inverted to fit within an octave.)
 	if (label[0] === ':') {
 		inversion = true;
+		label.shift();
+	}
+
+	// Check to see if this chord should be interpreted as a literal spellout.
+	// (That is, each note is specified directly, do not use sequence degrees.)
+	if (label[0] === '$') {
+		spellout = true;
 		label.shift();
 	}
 	
@@ -39,12 +48,80 @@ function convertLabelToNoteArray(label_str) {
 		if (label[1] === '#') {
 			scale_offset += 1
 		}
+		if (spellout && (label[1] === '+')) {
+			// You wouldn't want to get into the habit of using this sharp, but I'll support it for now.
+			scale_offset += 1
+		}
+		if (spellout && (label[1] === '-')) {
+			scale_offset -= 1
+		}
+	}
+
+
+	// If spellout, calculate sequence degrees
+	if (spellout) {
+		// First, move the # and - to the notes they follow
+		var spell = [0]; // We want this hoisted, so no `let`.
+		let octave_adjustment = 0;
+		for (let i = 1; i < label.length; i++) {
+			// We'll deal with these in the look ahead
+			if ((label[i] == '#') || (label[i] == '-') || (label[i] == '+')) {
+				// but if they do exist after the look ahead, remove them - it's likely a syntax error
+				label.splice(i,1);
+				i--;
+				continue;
+			}
+
+			let note_offset = chromatic_scale.indexOf(label[i]);
+			if (note_offset >= 0) {
+			
+				// look ahead
+				if ((i + 1) < label.length) {
+					if (label[i+1] == '-') {
+						note_offset -= 1;
+						label.splice(i+1,1); // remove it
+					} else if ((label[i+1] == '#') || (label[i+1] == '+')) {
+						note_offset += 1;
+						label.splice(i+1,1); // remove it
+					}
+				}
+
+				// Apply the proper scale offset
+				note_offset -= scale_offset;
+
+				// hop the necessary octaves if inversion
+				for (;(note_offset < spell[spell.length - 1]) && inversion;note_offset += octave){}
+
+				// add octave_adjustment if inversion, then push regardless
+				spell.push(note_offset + (inversion ? octave_adjustment : 0));
+				octave_adjustment = 0;
+				continue
+			} else if (label[i] == '<') {
+				// TODO: this may behave unexpectedly.  Example o4[:$d<crr]1 results in o4d1 and o4c1, because c<d, so a `>` is implied.
+				octave_adjustment = -octave;
+				label.splice(i,1);
+				i--;
+			} else if (label[i] == '>') {
+				octave_adjustment = +octave;
+				label.splice(i,1);
+				i--;
+			} else if (label[i] == 'r') {
+				// just mirror the existing offset
+				spell.push(spell[spell.length - 1])
+				label[i] = '0' // make it compatible with the following for loop which expects 0, not r, for rests.
+			} else {
+				console.warn('Unexpected character `' + label[i] + '` in chord spellout.') 
+				label.splice(i,1);
+				i--;
+			}
+		}
 	}
 	
 	// Then, iterate through the specified scale degrees, converting them to notes.
 	let notes = [chromatic_scale[(scale_offset)%octave]];
 	for (let i = 1; i < label.length; i++) {
-		let note_offset = sequence_degrees.indexOf(label[i]);
+		let note_offset = (spellout ? spell[i] : sequence_degrees.indexOf(label[i]));
+		// Remember that 'r' is a sequence degree, so rests are 0's here.
 		if (label[i] === '0') {
 			notes.push('r');
 			continue;
