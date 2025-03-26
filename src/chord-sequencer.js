@@ -131,7 +131,7 @@ function convertLabelToNoteArray(label_str) {
 			continue;
 		}
 		let scale_hops = Math.floor((scale_offset + note_offset)/octave);
-		notes.push(''.padEnd(inversion ? 0 : scale_hops, '>') + chromatic_scale[(scale_offset + note_offset)%octave] + ''.padEnd(inversion ? 0 : scale_hops, '<'));
+		notes.push(''.padEnd(inversion ? scale_hops : 0, '>') + chromatic_scale[(scale_offset + note_offset)%octave] + ''.padEnd(inversion ? scale_hops : 0, '<'));
 	}
 	return notes;
 }
