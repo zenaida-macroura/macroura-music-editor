@@ -96,11 +96,6 @@ function convertLabelToNoteArray(label_str) {
 				spell.push(note_offset + (inversion ? octave_adjustment : 0));
 				octave_adjustment = 0;
 				continue
-			} else if (label[i] == '<') {
-				// TODO: this may behave unexpectedly.  Example o4[:$d<crr]1 results in o4d1 and o4c1, because c<d, so a `>` is implied.
-				octave_adjustment = -octave;
-				label.splice(i,1);
-				i--;
 			} else if (label[i] == '>') {
 				octave_adjustment = +octave;
 				label.splice(i,1);
@@ -118,12 +113,12 @@ function convertLabelToNoteArray(label_str) {
 	}
 	
 	// Then, iterate through the specified scale degrees, converting them to notes.
-	let notes = [chromatic_scale[(scale_offset)%octave]];
+	let notes = [[chromatic_scale[(scale_offset)%octave],'']];
 	for (let i = 1; i < label.length; i++) {
 		let note_offset = (spellout ? spell[i] : sequence_degrees.indexOf(label[i]));
 		// Remember that 'r' is a sequence degree, so rests are 0's here.
 		if (label[i] === '0') {
-			notes.push('r');
+			notes.push(['r','']);
 			continue;
 		}
 		if (note_offset === -1) {
@@ -131,7 +126,8 @@ function convertLabelToNoteArray(label_str) {
 			continue;
 		}
 		let scale_hops = Math.floor((scale_offset + note_offset)/octave);
-		notes.push(''.padEnd(inversion ? scale_hops : 0, '>') + chromatic_scale[(scale_offset + note_offset)%octave] + ''.padEnd(inversion ? scale_hops : 0, '<'));
+		// TODO: if '<' added for literal spellout, this'll have to be rewritten.
+		notes.push([''.padEnd(inversion ? scale_hops : 0, '>') + chromatic_scale[(scale_offset + note_offset)%octave], ''.padEnd(inversion ? scale_hops : 0, '<')]);
 	}
 	return notes;
 }
@@ -158,11 +154,15 @@ function convertBlockToChords(block_definition) {
 		let notes = convertLabelToNoteArray(before_and_after[0]);
 
 		// Fill implied 0's (rests).
-		notes = notes.concat(Array(4 - notes.length).fill('r'));
+		notes = notes.concat(Array(4 - notes.length).fill(['r','']));
+
+		// glob the duration
+		let [duration] = before_and_after[1].match(/[0-9]*\.*/)
+		let after = before_and_after[1].substr(duration.length)
 
 		// for each note, add it to the corresponding output block, then the things following
 		for (let n = 0; n < 4/*notes.length*/; n++) {
-			blocks[n] += notes[n] + before_and_after[1];
+			blocks[n] += notes[n][0] + duration + notes[n][1] + after;
 		}
 	}
 	return blocks;
