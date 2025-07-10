@@ -4,9 +4,14 @@ An MML &amp; MIDI editor targeting MuSICA for the MSX.
 Optimistic Roadmap:
 * [ ] MIDI Input
   * [x] Monophonic Recording
-  * [ ] Polyphonic Recording
+  * [x] Polyphonic Recording
   * [ ] Audio feedback while recording
 * [x] Chord Sequencer
+  * [ ] Macros `{}`
+    * [ ] Glide/glissando
+	 * [ ] Chord strum
+	 * [ ] Trill
+	 * [ ] Arpeggio
 * [ ] Drum Sequencer
 * [x] Extended MML dialect transpiler
   * [x] Chord splitter
