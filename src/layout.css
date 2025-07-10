@@ -12,11 +12,12 @@ body, html { margin: 0; padding: 0; font-family: sans-serif; }
 .vertical { flex-direction: column; }
 .item { flex: 500px; border: 1px solid black; min-height: 50vh; border-left: 2px solid var(--btn-grey-dark); border-top: 2px solid var(--btn-grey-dark); border-bottom: 2px solid var(--btn-grey-light); border-right: 2px solid var(--btn-grey-light); background: var(--btn-grey-norm); }
 h3 { display: block; font-size: 1em; margin: 0px; padding: 4px; border: 1px solid var(--btn-grey-light); border-right: 1px solid var(--btn-grey-dark); border-bottom: 1px solid var(--btn-grey-dark); background: var(--btn-grey-norm); text-align: center; }
+h4 { margin: 0.75em 0px; }
 
 
 input[type=textbox], textarea { background: #fff; border-left: 1px solid var(--btn-grey-dark); border-top: 1px solid var(--btn-grey-dark); border-right: 1px solid var(--btn-grey-light); border-bottom: 1px solid var(--btn-grey-light); width: 100%; }
 
-button { border: 1px solid var(--btn-grey-light); border-bottom: 1px solid var(--btn-grey-dark); border-right: 1px solid var(--btn-grey-dark); background: var(--btn-grey-norm); padding: 8px; font-size: 15px; }
+button { border: 1px solid var(--btn-grey-light); border-bottom: 1px solid var(--btn-grey-dark); border-right: 1px solid var(--btn-grey-dark); background: var(--btn-grey-norm); padding: 8px; font-size: 15px; margin-right: 1px; }
 button.blue { border: 1px solid var(--btn-blue-light); border-bottom: 1px solid var(--btn-blue-dark); border-right: 1px solid var(--btn-blue-dark); background: var(--btn-blue-norm); padding: 8px; color: white; }
 button.red { border: 1px solid var(--btn-red-light); border-bottom: 1px solid var(--btn-red-dark); border-right: 1px solid var(--btn-red-dark); background: var(--btn-red-norm); padding: 8px; color: white;}
 

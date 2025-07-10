@@ -9,19 +9,19 @@
 </head>
 <body>
    <div class="container horizontal">
-      <div id="wmsx" class="item" style="min-width: 700px;"><h3>MuSICA Editor</h3><div id="wmsx-screen"></div>Powered by <a href="http://webmsx.org/">WebMSX</a></div>
+      <div id="wmsx" class="item" style="min-width: 700px;"><h3>MuSICA Editor</h3><div id="wmsx-screen"></div><p>Powered by <a href="http://webmsx.org/">WebMSX</a></p></div>
       <div class="item container vertical">
          <h3>Record from MIDI (Monophonic)</h3>
-         <div><button class="blue" onclick="startRecording()">Record MIDI</button><!--<button class="blue">Record Keyboard</button>--><button class="red" onclick="stopRecording()">Stop Recording</button></div>
-         <p>Sequence Data:</p>
-         <textarea id="references"></textarea>
-         <p>Block Data:</p>
+         <h4>MIDI Settings</h4>
+			<div><label for="tempo">Tempo</label><input id="tempo" name="tempo" value="130"></input></div>
+			<div><label for="polynum">Polyphony</label><select id="polynum" name="polynum"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option></select></div>
+         <div><button class="blue" onclick="startRecording(Number.parseInt(polynum.value),Number.parseInt(tempo.value))">Record MIDI</button><!--<button class="blue">Record Keyboard</button>--><button class="red" onclick="stopRecording()">Stop Recording</button></div>
+         <h4>Block Data</h4>
          <textarea id="definitions" style="flex: 1;"></textarea>
       </div>
       <div class="item container vertical"><h3>Chord Extension Transpiler</h3>
-         <div><button class="blue" onclick="outchord.value = processMMLFileForChords(inchord.value)">Expand Chords</button></div>
-         <p>Input MML File with chords:</p>
-	 <textarea id="inchord" rows=7>; Title: 
+         <h4>Input MML File with chords</h4>
+	 <textarea id="inchord" style="flex: 1;">; Title: 
 ; Author: 
 FM1 =
 FM2 =
@@ -44,8 +44,9 @@ SCC3=
 SCC4=
 SCC5=
 </textarea>
-	 <p>Output MuSICA compatible MML File:</p>
-	 <textarea id="outchord" style="flex: 1;"></textarea>
+         <div><button class="blue" onclick="outchord.value = processMMLFileForChords(inchord.value)">Expand Chords</button></div>
+	 <h4>Output MuSICA compatible MML File</h4>
+	 <textarea id="outchord" rows=7></textarea>
       </div>
       <div class="item container vertical">
          <h3>Percussion Sequencer</h3>
@@ -53,7 +54,7 @@ SCC5=
          <textarea id="outbeats" style="flex: 1;"></textarea>
       </div>
    </div>
-   <script src="src/live-midi-monophonic.js"></script>
+   <script src="src/midi-polyphonic.js"></script>
    <script src="src/chord-sequencer.js"></script>
    <script src="src/drumkit-sequencer.js"></script>
    <script src="lib/wmsx.js"></script>
