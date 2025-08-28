@@ -41,7 +41,6 @@ The scale is determined by the initial letter in the tetrad.  Originally the chr
 ```
 New Schema: c  c# d  d# e  f  f# g  g# a  a# b
 Old Schema: o  p  q  r  s  t  u  v  w  x  y  z
-
 ```
 Do note that the new schema does not support defining via flats.  Sharps are used because the `#` symbol does not exist in the scale degree list, as defined by the following paragraphs.
 
@@ -71,6 +70,27 @@ cds1=c2r2a2r2f2r2g2r2
 cds2=e2r2c2r2a2r2b2r2
 cds3=g2r2e2r2c2r2d2r2
 cds4=r2r2r2r2r2r2r2r2
+```
+##### Chord Label Modifiers (And Alternate Spellouts)
+At the beginning of a chord label, the following symbols modify the output:
+| Symbol | Meaning |
+|--------|---------|
+|`:`| Inversion Literal.  (By default, chord notes wrap around to fit within an octave.  With Inversion Literal set, the notes will stack exactly as specified, even if it extends out of the original octave.)|
+|`$`| Literal Spellout.  (Instead of using the scale degrees, everything is interpreted as a note.  Ex: `[$ceg]` {the notes 'c', 'e', and 'g'} rather than `[c35]`.)|
+|`^`| Roman Numeral. (Instead of specifying a root note, define the chord relative to the key.  Ex: `[^vm5s]` in the key of c is equivalent to `[gm5s]`.)|
+
+`:` can be used in conjunction with `$` or `^`; it must come first in the order of modifiers.  Ex: `[:$yoq]` and `[:^VIIm5s]`.
+
+###### Notes on Roman Numerals
+A key must be declared at the start of a sequence/block.  (There is no default key, and keys do not carry over between blocks.)  This can be done by using two `^` symbols at the front, placing the desired major key between them.  Ex: `[^f#^iim5s]` is equivalent to `[g#m5s]`.
+
+Additionally, a key can be redeclared relative to the prior key.  Ex: `[^c^I35] [^ii^I35]` which is equivalent to `[c35] [d35]`.
+
+`-` can be used as a flat modifier, when used as a prefix.  Ex: `-iii` for ♭iii.
+
+Eight bar example:
+```
+[^c^I357]1 [^-iiim5s]1 [^iim5s]1 [^V35s]1 [^ii^iim-s]1 [^V35s]1 [^c^iim5s]1 [^V35s]1
 ```
 
 ### Transferring MML data to MuSICA
