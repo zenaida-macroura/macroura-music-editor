@@ -10,7 +10,14 @@ const _chromatic_s_flat = ['c', 'd-', 'd', 'e-', 'e', 'f', 'g-', 'g', 'a-', 'a',
 const scale_identifiers = ['o', 'p',  'q', 'r',  's', 't', 'u',  'v', 'w',  'x', 'y',  'z'];
 const sequence_degrees =  ['1', 'u',  '2', 'm',  '3', '4', '-',  '5', '+',  '6', 's',  '7',
                            '8', 'n',  '9', 't',  'a', 'b', 'w',  'c', 'r',  'd'];
+
+const roman_numeral = ['i',  '#i', 'ii',  '#ii', 'iii', 'iv', '#iv', 'v',  '#v', 'vi',  '#vi', 'vii'];
+const _roman_n_flat = ['i', '-ii', 'ii', '-iii', 'iii', 'iv',  '-v', 'v', '-vi', 'vi', '-vii', 'vii'];
+
 const octave = 12;
+
+// Global variable (oops)
+let key = undefined; // should be a string that exists in chromatic_scale (so no flats!)
 
 // Take in a label string (of any length) and convert it into an array of the notes making up the chord.
 // Future proofing against our current four note / tetrad limitation.
@@ -18,6 +25,7 @@ function convertLabelToNoteArray(label_str) {
 	let label = Array.from(label_str);
 	let inversion = false;
 	let spellout = false;
+	let roman = false;
 	
 	// Check to see if this chord should be interpreted as a literal inversion.
 	// (That is, it should not be inverted to fit within an octave.)
@@ -31,6 +39,79 @@ function convertLabelToNoteArray(label_str) {
 	if (label[0] === '$') {
 		spellout = true;
 		label.shift();
+	// Check to see if this chord uses roman numerals to define the root.
+	// (NOTE: I think this is the only time we've ensured case-insensitivity.  Possible TODO: allow case-insensitive spellout literals and such.)
+	} else if (label[0] === '^') {
+		roman = true;
+		label.shift();
+		// Check to see if a key is being defined in this block
+		if (label.indexOf('^') >= 0) {
+			let temp_key = label.splice(0,label.indexOf('^')).join('');
+			label.shift();
+			//console.log(temp_key)
+			// Check if this is a relative key
+			if (roman_numeral.indexOf(temp_key.toLowerCase()) >= 0) {
+				if (typeof key !== 'undefined') {
+					key = chromatic_scale[(chromatic_scale.indexOf(key) + roman_numeral.indexOf(temp_key.toLowerCase())) % octave];
+				} else {
+					console.error('Relative key was defined despite no key being set.');
+					return [];
+				}
+			} else if (_roman_n_flat.indexOf(temp_key.toLowerCase()) >= 0) {
+				if (typeof key !== 'undefined') {
+					key = chromatic_scale[(chromatic_scale.indexOf(key) + _roman_n_flat.indexOf(temp_key.toLowerCase())) % octave];
+				} else {
+					console.error('Relative key was defined despite no key being set.');
+					return [];
+				}
+			} else {
+				// It must be a key defined in terms of a note.
+				if (chromatic_scale.indexOf(temp_key.toLowerCase()) >= 0) {
+					key = temp_key.toLowerCase();
+				} else if (_chromatic_s_flat.indexOf(temp_key.toLowerCase()) >= 0) {
+					key = chromatic_scale[_chromatic_s_flat.indexOf(temp_key.toLowerCase())];
+				} else {
+					console.error('Invalid key definition: ' + temp_key);
+					return [];
+				}
+			}
+
+		}
+
+		// Catch undefined key early.
+		if (typeof key == 'undefined') {
+			console.error('Cannot use roman numerals without first defining a key.');
+			return [];
+		}
+
+		// Process the roman numeral for this chord
+		// Read in the roman numeral
+		let roman_string = '';
+		if (label[0] === '+' || label[0] === '#') {
+			label.shift();
+			roman_string += '#';
+		} else if (label[0] === '-') {
+			roman_string += label.shift();
+		}
+		while ((label[0].toLowerCase() == 'i') || (label[0].toLowerCase() == 'v')) {
+			roman_string += (label.shift().toLowerCase());
+		}
+
+		// convert the roman numeral into an offset
+		let roman_offset = roman_numeral.indexOf(roman_string);
+		if (roman_offset < 0) {
+			roman_offset = _roman_n_flat.indexOf(roman_string)
+		}
+		if (roman_offset < 0) {
+			console.error('Provided roman numeral does not appear to be valid: ' + roman_string);
+			return [];
+		}
+
+		// Make relative to the key, avoid negative numbers, and then mod 12
+		roman_offset = (12 + chromatic_scale.indexOf(key) + roman_offset) % 12;
+
+		// Masquerade as a normal chord definition
+		label.unshift(chromatic_scale[roman_offset]);
 	}
 	
 	// First, shift the chromatic scale so that it starts with the right note.
@@ -61,7 +142,7 @@ function convertLabelToNoteArray(label_str) {
 	// If spellout, calculate sequence degrees
 	if (spellout) {
 		// First, move the # and - to the notes they follow
-		var spell = [0]; // We want this hoisted, so no `let`.
+		var spell = [0]; // We want this hoisted, so no `let`. (We're reusing this after the spellout if.)
 		let octave_adjustment = 0;
 		for (let i = 1; i < label.length; i++) {
 			// We'll deal with these in the look ahead
